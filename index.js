@@ -28,45 +28,7 @@ function checkHost(req, res, next) {
 }
 
 // Public - get competition stats
-// Auto-create tables on startup
-async function initDB() {
-  try {
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS competitions (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) DEFAULT 'Mystery Pot Challenge',
-        end_date TIMESTAMP NOT NULL,
-        price DECIMAL(10,2) DEFAULT 0.10,
-        host_cut INTEGER DEFAULT 30,
-        live BOOLEAN DEFAULT true,
-        pot_revealed BOOLEAN DEFAULT false,
-        winner_drawn BOOLEAN DEFAULT false,
-        winner_name VARCHAR(255),
-        created_at TIMESTAMP DEFAULT NOW()
-      );
-      CREATE TABLE IF NOT EXISTS entries (
-        id SERIAL PRIMARY KEY,
-        competition_id INTEGER REFERENCES competitions(id),
-        username VARCHAR(255) NOT NULL,
-        platform VARCHAR(100) DEFAULT 'Unknown',
-        qty INTEGER DEFAULT 1,
-        paid BOOLEAN DEFAULT false,
-        payment_method VARCHAR(50),
-        ref_code VARCHAR(20) UNIQUE NOT NULL,
-        email VARCHAR(255),
-        created_at TIMESTAMP DEFAULT NOW()
-      );
-    `);
-    const existing = await pool.query('SELECT id FROM competitions LIMIT 1');
-    if (existing.rows.length === 0) {
-      await pool.query(
-        `INSERT INTO competitions (name,end_date,price,host_cut,live) VALUES ($1,$2,$3,$4,$5)`,
-        ['Mystery Pot Challenge', '2026-05-23 20:00:00', 0.10, 30, true]
-      );
-    }
-    console.log('Database ready!');
-  } catch(e) { console.error('DB init error:', e.message); }
-}app.get('/api/competition', async (req, res) => {
+app.get('/api/competition', async (req, res) => {
   try {
     const c = await pool.query('SELECT * FROM competitions ORDER BY id DESC LIMIT 1');
     if (!c.rows.length) return res.json({ error: 'No competition' });
@@ -206,7 +168,4 @@ app.post('/api/host/new-competition', checkHost, async (req, res) => {
 app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date() }));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, async () => {
-  console.log('Mystery Pot server running on port ' + PORT);
-  await initDB();
-});
+app.listen(PORT, () => console.log('Mystery Pot server running on port ' + PORT));
