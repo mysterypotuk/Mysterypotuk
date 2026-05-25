@@ -286,8 +286,8 @@ app.post('/api/wallet/deposit/create',checkAuth,async(req,res)=>{
       payment_method_types:['card'],
       line_items:[{price_data:{currency:'gbp',product_data:{name:`Mystery Pot UK — Wallet Deposit`,description:`Add £${(amount/100).toFixed(2)} to your Mystery Pot wallet`},unit_amount:amount},quantity:1}],
       mode:'payment',
-      success_url:`https://mysterypotuk.netlify.app?wallet=deposit&session={CHECKOUT_SESSION_ID}`,
-      cancel_url:`https://mysterypotuk.netlify.app?wallet=cancelled`,
+      success_url:`https://mysterypotuk.github.io/Mysterypotuk?wallet=deposit&session={CHECKOUT_SESSION_ID}`,
+      cancel_url:`https://mysterypotuk.github.io/Mysterypotuk?wallet=cancelled`,
       metadata:{type:'wallet_deposit',player_id:req.player.id.toString(),username:req.player.username,amount:amount.toString()}
     });
     res.json({sessionId:session.id,url:session.url});
@@ -452,8 +452,8 @@ app.post('/api/stripe/create-session',async(req,res)=>{
       payment_method_types:['card'],
       line_items:[{price_data:{currency:'gbp',product_data:{name:gameNames[game]||'Mystery Pot UK',description:'mysterypotuk.netlify.app — Draw every Saturday 8pm'},unit_amount:amount},quantity:1}],
       mode:'payment',
-      success_url:successUrl||`https://mysterypotuk.netlify.app?payment=success&session={CHECKOUT_SESSION_ID}`,
-      cancel_url:cancelUrl||`https://mysterypotuk.netlify.app?payment=cancelled`,
+      success_url:successUrl||`https://mysterypotuk.github.io/Mysterypotuk?payment=success&session={CHECKOUT_SESSION_ID}`,
+      cancel_url:cancelUrl||`https://mysterypotuk.github.io/Mysterypotuk?payment=cancelled`,
       metadata:{game,username,platform:platform||'Unknown',...metadata}
     });
     res.json({sessionId:session.id,url:session.url});
